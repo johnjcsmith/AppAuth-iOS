@@ -36,10 +36,18 @@ NS_ASSUME_NONNULL_BEGIN
         authorization UI. Concrete implementations of a @c OIDAuthorizationUICoordinator may call
         resumeAuthorizationFlowWithURL or failAuthorizationFlowWithError on session to either
         resume or fail the authorization.
+    @param shouldForceSafari Should use UIApplication.openURL(url:URL) for authorization. Has no effect on macOS
     @return YES If the authorization UI was successfully presented to the user.
  */
 - (BOOL)presentAuthorizationRequest:(OIDAuthorizationRequest *)request
+                            session:(id<OIDAuthorizationFlowSession>)session
+                            shouldForceSafari:(BOOL) shouldForceSafari;
+
+/*! @brief Overload of presentAuthorizationRequest which defaults shouldForceSafari to NO */
+- (BOOL)presentAuthorizationRequest:(OIDAuthorizationRequest *)request
                             session:(id<OIDAuthorizationFlowSession>)session;
+
+
 
 /*! @brief Dimisses the authorization UI and calls completion when the dismiss operation ends.
     @param animated Wheter or not the dismiss operation should be animated.

@@ -41,6 +41,12 @@ NS_ASSUME_NONNULL_BEGIN
                      presentingViewController:(UIViewController *)presentingViewController
                                      callback:(OIDAuthStateAuthorizationCallback)callback;
 
++ (id<OIDAuthorizationFlowSession>)
+   authStateByPresentingAuthorizationRequest:(OIDAuthorizationRequest *)authorizationRequest
+                     presentingViewController:(UIViewController *)presentingViewController
+                     shouldUseSafari:(BOOL)shouldUseSafari
+                     callback:(OIDAuthStateAuthorizationCallback)callback;
+
 @end
 
 NS_ASSUME_NONNULL_END

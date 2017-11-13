@@ -144,15 +144,25 @@ typedef void (^OIDAuthStateAuthorizationCallback)(OIDAuthState *_Nullable authSt
     @param authorizationRequest The authorization request to present.
     @param UICoordinator Generic authorization UI coordinator that can present an authorization
         request.
+    @param shouldForceSafari Should use UIApplication.openURL(url:URL) for authorization
     @param callback The method called when the request has completed or failed.
     @return A @c OIDAuthorizationFlowSession instance which will terminate when it
         receives a @c OIDAuthorizationFlowSession.cancel message, or after processing a
         @c OIDAuthorizationFlowSession.resumeAuthorizationFlowWithURL: message.
  */
+
++ (id<OIDAuthorizationFlowSession>)
+    authStateByPresentingAuthorizationRequest:(OIDAuthorizationRequest *)authorizationRequest
+                                UICoordinator:(id<OIDAuthorizationUICoordinator>)UICoordinator
+                                    shouldForceSafari:(BOOL)shouldForceSafari
+                                    callback:(OIDAuthStateAuthorizationCallback)callback;
+
+/*! @brief Overload of authStateByPresentingAuthorizationRequest which defaults shouldForceSafari to NO */
 + (id<OIDAuthorizationFlowSession>)
     authStateByPresentingAuthorizationRequest:(OIDAuthorizationRequest *)authorizationRequest
                                 UICoordinator:(id<OIDAuthorizationUICoordinator>)UICoordinator
                                      callback:(OIDAuthStateAuthorizationCallback)callback;
+
 
 /*! @internal
     @brief Unavailable. Please use @c initWithAuthorizationResponse:.

@@ -107,6 +107,7 @@ static const NSUInteger kExpiryTimeTolerance = 60;
 + (id<OIDAuthorizationFlowSession>)
     authStateByPresentingAuthorizationRequest:(OIDAuthorizationRequest *)authorizationRequest
                                 UICoordinator:(id<OIDAuthorizationUICoordinator>)UICoordinator
+                                     shouldForceSafari:(BOOL)shouldForceSafari
                                      callback:(OIDAuthStateAuthorizationCallback)callback {
   // presents the authorization request
   id<OIDAuthorizationFlowSession> authFlowSession = [OIDAuthorizationService
@@ -149,6 +150,18 @@ static const NSUInteger kExpiryTimeTolerance = 60;
                            }
                          }];
   return authFlowSession;
+}
+
++ (id<OIDAuthorizationFlowSession>)
+    authStateByPresentingAuthorizationRequest:(OIDAuthorizationRequest *)authorizationRequest
+                                UICoordinator:(id<OIDAuthorizationUICoordinator>)UICoordinator
+                                    callback:(OIDAuthStateAuthorizationCallback)callback {
+    
+    return [self authStateByPresentingAuthorizationRequest:authorizationRequest
+                                             UICoordinator:UICoordinator
+                                                  shouldForceSafari: false
+                                                  callback:callback];
+    
 }
 
 #pragma mark - Initializers

@@ -26,11 +26,30 @@
     authStateByPresentingAuthorizationRequest:(OIDAuthorizationRequest *)authorizationRequest
                      presentingViewController:(UIViewController *)presentingViewController
                                      callback:(OIDAuthStateAuthorizationCallback)callback {
-  OIDAuthorizationUICoordinatorIOS *coordinator = [[OIDAuthorizationUICoordinatorIOS alloc]
-      initWithPresentingViewController:presentingViewController];
-  return [self authStateByPresentingAuthorizationRequest:authorizationRequest
-                                           UICoordinator:coordinator
-                                                callback:callback];
+   
+   
+    return [self authStateByPresentingAuthorizationRequest:authorizationRequest
+                                          presentingViewController:(UIViewController *)presentingViewController
+                                          shouldForceSafari: false
+                                                  callback:callback];
 }
+
+
++ (id<OIDAuthorizationFlowSession>)
+    authStateByPresentingAuthorizationRequest:(OIDAuthorizationRequest *)authorizationRequest
+                    presentingViewController:(UIViewController *)presentingViewController
+                                    shouldForceSafari:(BOOL)shouldForceSafari
+                                    callback:(OIDAuthStateAuthorizationCallback)callback {
+    
+    OIDAuthorizationUICoordinatorIOS *coordinator = [[OIDAuthorizationUICoordinatorIOS alloc]
+                                                     initWithPresentingViewController:presentingViewController];
+
+    
+    return [self authStateByPresentingAuthorizationRequest:authorizationRequest
+                                             UICoordinator:coordinator
+                                                  shouldForceSafari: shouldForceSafari
+                                                  callback:callback];
+}
+
 
 @end

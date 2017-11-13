@@ -77,7 +77,8 @@ static id<OIDSafariViewControllerFactory> __nullable gSafariViewControllerFactor
 }
 
 - (BOOL)presentAuthorizationRequest:(OIDAuthorizationRequest *)request
-                            session:(id<OIDAuthorizationFlowSession>)session {
+                            session:(id<OIDAuthorizationFlowSession>)session
+                            shouldForceSafari:(BOOL) shouldForceSafari {
   if (_authorizationFlowInProgress) {
     // TODO: Handle errors as authorization is already in progress.
     return NO;
@@ -88,35 +89,39 @@ static id<OIDSafariViewControllerFactory> __nullable gSafariViewControllerFactor
   BOOL openedSafari = NO;
   NSURL *requestURL = [request authorizationRequestURL];
 
-  if (@available(iOS 11.0, *)) {
-    NSString *redirectScheme = request.redirectURL.scheme;
-    SFAuthenticationSession* authenticationVC =
-        [[SFAuthenticationSession alloc] initWithURL:requestURL
-                                   callbackURLScheme:redirectScheme
-                                   completionHandler:^(NSURL * _Nullable callbackURL,
-                                                       NSError * _Nullable error) {
-      _authenticationVC = nil;
-      if (callbackURL) {
-        [_session resumeAuthorizationFlowWithURL:callbackURL];
-      } else {
-        NSError *safariError =
-            [OIDErrorUtilities errorWithCode:OIDErrorCodeUserCanceledAuthorizationFlow
-                             underlyingError:error
-                                 description:nil];
-        [_session failAuthorizationFlowWithError:safariError];
-      }
-    }];
-    _authenticationVC = authenticationVC;
-    openedSafari = [authenticationVC start];
-  } else if (@available(iOS 9.0, *)) {
-      SFSafariViewController *safariVC =
-          [[[self class] safariViewControllerFactory] safariViewControllerWithURL:requestURL];
-      safariVC.delegate = self;
-      _safariVC = safariVC;
-      [_presentingViewController presentViewController:safariVC animated:YES completion:nil];
-      openedSafari = YES;
-  } else {
+  if (shouldForceSafari) {
     openedSafari = [[UIApplication sharedApplication] openURL:requestURL];
+  } else {
+    if (@available(iOS 11.0, *)) {
+      NSString *redirectScheme = request.redirectURL.scheme;
+      SFAuthenticationSession* authenticationVC =
+          [[SFAuthenticationSession alloc] initWithURL:requestURL
+                                     callbackURLScheme:redirectScheme
+                                     completionHandler:^(NSURL * _Nullable callbackURL,
+                                                         NSError * _Nullable error) {
+        _authenticationVC = nil;
+        if (callbackURL) {
+          [_session resumeAuthorizationFlowWithURL:callbackURL];
+        } else {
+          NSError *safariError =
+              [OIDErrorUtilities errorWithCode:OIDErrorCodeUserCanceledAuthorizationFlow
+                               underlyingError:error
+                                   description:nil];
+          [_session failAuthorizationFlowWithError:safariError];
+        }
+      }];
+      _authenticationVC = authenticationVC;
+      openedSafari = [authenticationVC start];
+    } else if (@available(iOS 9.0, *)) {
+        SFSafariViewController *safariVC =
+            [[[self class] safariViewControllerFactory] safariViewControllerWithURL:requestURL];
+        safariVC.delegate = self;
+        _safariVC = safariVC;
+        [_presentingViewController presentViewController:safariVC animated:YES completion:nil];
+        openedSafari = YES;
+    } else {
+      openedSafari = [[UIApplication sharedApplication] openURL:requestURL];
+    }
   }
 
   if (!openedSafari) {
@@ -127,6 +132,11 @@ static id<OIDSafariViewControllerFactory> __nullable gSafariViewControllerFactor
     [session failAuthorizationFlowWithError:safariError];
   }
   return openedSafari;
+}
+
+- (BOOL)presentAuthorizationRequest:(OIDAuthorizationRequest *)request
+                            session:(id<OIDAuthorizationFlowSession>)session {
+    return [self presentAuthorizationRequest:request session:session shouldForceSafari:NO];
 }
 
 - (void)dismissAuthorizationAnimated:(BOOL)animated completion:(void (^)(void))completion {

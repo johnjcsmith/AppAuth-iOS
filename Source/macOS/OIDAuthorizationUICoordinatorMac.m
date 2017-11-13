@@ -50,6 +50,13 @@ NS_ASSUME_NONNULL_BEGIN
   return openedBrowser;
 }
 
+- (BOOL)presentAuthorizationRequest:(OIDAuthorizationRequest *)request
+                            session:(id<OIDAuthorizationFlowSession>)session
+                            shouldForceSafari:(BOOL) shouldForceSafari {
+    
+    return [self presentAuthorizationRequest:request session:session];
+}
+
 - (void)dismissAuthorizationAnimated:(BOOL)animated completion:(void (^)(void))completion {
   if (!_authorizationFlowInProgress) {
     // Ignore this call if there is no authorization flow in progress.
